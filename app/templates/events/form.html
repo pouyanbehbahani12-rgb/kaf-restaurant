@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Events — KAF Agent{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>Events & Promotions</h1>
+</div>
+
+<div class="card">
+  <h2>Add New Event</h2>
+  <form method="post" action="/events">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Arabic Title * <span class="lang-tag">عربي</span></label>
+        <input type="text" name="title_ar" class="form-input" required dir="rtl" placeholder="خصم 20% على القهوة">
+      </div>
+      <div class="form-group">
+        <label class="form-label">English Title</label>
+        <input type="text" name="title_en" class="form-input" dir="ltr" placeholder="20% off coffee">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Promo Type</label>
+        <select name="promo_type" class="form-input">
+          {% for pt in promo_types %}
+          <option value="{{ pt }}">
+            {% if pt == 'general' %}General
+            {% elif pt == 'discount' %}Discount
+            {% elif pt == 'new_item' %}New Item
+            {% elif pt == 'special' %}Special
+            {% elif pt == 'seasonal' %}Seasonal
+            {% else %}{{ pt }}{% endif %}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Discount %</label>
+        <input type="number" name="discount_percent" class="form-input" min="0" max="100" value="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Event Date</label>
+        <input type="date" name="event_date" class="form-input">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <textarea name="description" class="form-textarea" rows="3"
+                placeholder="Additional details about the event or promotion..."></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Event +</button>
+  </form>
+</div>
+
+<!-- Events List -->
+<div class="section-header">
+  <h2>Active Events</h2>
+</div>
+
+{% if events %}
+{% for event in events %}
+<div class="event-row">
+  <div class="event-info">
+    <div class="event-titles">
+      <strong>{{ event.title_en or '—' }}</strong>
+      <span class="event-title-ar rtl text-muted">{{ event.title_ar }}</span>
+    </div>
+    <div class="event-meta">
+      <span class="badge badge-{{ event.promo_type }}">{{ event.promo_type }}</span>
+      {% if event.discount_percent > 0 %}
+      <span class="badge badge-discount">{{ event.discount_percent | int }}% off</span>
+      {% endif %}
+      {% if event.event_date %}
+      <span class="text-muted">{{ event.event_date.strftime('%Y-%m-%d') }}</span>
+      {% endif %}
+    </div>
+    {% if event.description %}<p class="event-desc">{{ event.description }}</p>{% endif %}
+  </div>
+  <form method="post" action="/events/{{ event.id }}/delete">
+    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this event?')">Delete</button>
+  </form>
+</div>
+{% endfor %}
+{% else %}
+<div class="empty-state">
+  <p>No active events yet.</p>
+</div>
+{% endif %}
+
+{% endblock %}

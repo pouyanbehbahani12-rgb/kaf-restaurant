@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — KAF Agent{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>Welcome{% if brand %} to {{ brand.cafe_name }}{% endif %} 👋</h1>
+  <p class="subtitle">Week of {{ week_start }}</p>
+</div>
+
+{% if not brand %}
+<div class="alert alert-warning">
+  Brand profile not set up yet.
+  <a href="/brand">Set up your brand →</a>
+</div>
+{% endif %}
+
+<!-- Stats Row -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-number">{{ stats.total }}</div>
+    <div class="stat-label">This Week</div>
+  </div>
+  <div class="stat-card stat-draft">
+    <div class="stat-number">{{ stats.draft }}</div>
+    <div class="stat-label">Pending Review</div>
+  </div>
+  <div class="stat-card stat-approved">
+    <div class="stat-number">{{ stats.approved }}</div>
+    <div class="stat-label">Approved</div>
+  </div>
+  <div class="stat-card stat-rejected">
+    <div class="stat-number">{{ stats.rejected }}</div>
+    <div class="stat-label">Rejected</div>
+  </div>
+</div>
+
+<div class="dashboard-grid">
+  <!-- Left: Quick Actions + Recent Posts -->
+  <div class="dashboard-main">
+    <div class="section-header">
+      <h2>Quick Actions</h2>
+    </div>
+    <div class="quick-actions">
+      <a href="/generate" class="btn btn-primary btn-large">✨ Generate This Week's Content</a>
+      <a href="/posts?status=draft" class="btn btn-secondary">Review Drafts ({{ stats.draft }})</a>
+      <a href="/posts?status=approved" class="btn btn-outline">Approved Posts</a>
+    </div>
+
+    {% if recent_posts %}
+    <div class="section-header" style="margin-top: 2rem;">
+      <h2>Recent Posts</h2>
+      <a href="/posts" class="link-all">View all →</a>
+    </div>
+    <div class="posts-grid">
+      {% for post in recent_posts %}
+      <div class="post-card status-{{ post.status }}">
+        <div class="post-card-header">
+          <span class="badge badge-{{ post.post_type }}">{{ post.post_type }}</span>
+          <span class="badge badge-status-{{ post.status }}">{{ post.status }}</span>
+        </div>
+        <!-- Arabic content -->
+        <p class="post-preview rtl">{{ post.content_ar[:100] }}{% if post.content_ar|length > 100 %}...{% endif %}</p>
+        <!-- English content -->
+        {% if post.content_en %}
+        <p class="post-preview-en text-muted">{{ post.content_en[:80] }}{% if post.content_en|length > 80 %}...{% endif %}</p>
+        {% endif %}
+        <a href="/posts/{{ post.id }}" class="btn btn-sm">View</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📭</div>
+      <p>No posts yet.</p>
+      <a href="/generate" class="btn btn-primary">Start Generating ✨</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Right: Upcoming Occasions -->
+  <div class="dashboard-sidebar">
+    <div class="section-header">
+      <h2>Upcoming Occasions</h2>
+      <span class="subtitle-small">Next 14 days</span>
+    </div>
+    {% if occasions %}
+    <ul class="occasions-list">
+      {% for occ in occasions %}
+      <li class="occasion-item">
+        <span class="occasion-icon">
+          {% if occ.theme == 'eid_fitr' or occ.theme == 'eid_adha' %}🌙
+          {% elif occ.theme == 'ramadan' or occ.theme == 'ramadan_start' %}🌙
+          {% elif occ.theme == 'coffee' %}☕
+          {% elif occ.theme == 'romantic' %}❤️
+          {% elif occ.theme == 'family' %}👨‍👩‍👧
+          {% elif occ.theme == 'national_day' %}🏳️
+          {% elif occ.theme == 'spiritual' %}✨
+          {% else %}📅
+          {% endif %}
+        </span>
+        <div class="occasion-info">
+          <strong>{{ occ.name_en }}</strong>
+          <span class="occ-arabic rtl">{{ occ.name_ar }}</span>
+          <span class="occasion-date">in {{ occ.days_until }} day{% if occ.days_until != 1 %}s{% endif %}</span>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted">No major occasions in the next 14 days.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,24 @@
+# Environment
+.env
+*.env
+
+# Database
+*.db
+*.sqlite
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Uploads (don't commit user files)
+uploads/*
+!uploads/.gitkeep
+
+# IDE
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Generate Content — KAF Agent{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>✨ Weekly Content Generation</h1>
+  <p class="subtitle">Claude will generate 8 ready-to-post drafts in Arabic and English</p>
+</div>
+
+<div class="card generate-card">
+  <!-- Before generation -->
+  <div id="before-gen">
+    <div class="generate-info">
+      <div class="generate-item">📸 3 Instagram Captions</div>
+      <div class="generate-item">🎬 2 Story Ideas</div>
+      <div class="generate-item">🎁 2 Promo Posts</div>
+      <div class="generate-item">🔥 1 Trend Post</div>
+    </div>
+    <p class="text-muted" style="margin-bottom: 1.5rem; font-size: 0.9rem;">
+      Claude will search for current Arabic Instagram trends, check upcoming occasions,
+      and combine everything with your menu and brand voice.
+    </p>
+    <button id="start-btn" onclick="startGeneration()" class="btn btn-primary btn-large">
+      ✨ Start Generation
+    </button>
+  </div>
+
+  <!-- Progress -->
+  <div id="progress-section" style="display:none">
+    <h3 style="margin-bottom: 1rem;">Generating your content...</h3>
+    <div id="progress-steps" class="progress-steps"></div>
+    <div class="progress-bar-container">
+      <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <!-- Done -->
+  <div id="done-section" style="display:none">
+    <div class="success-icon">✅</div>
+    <p id="done-message" class="success-message"></p>
+    <a href="/posts?status=draft" class="btn btn-primary btn-large">Review Drafts →</a>
+  </div>
+
+  <!-- Error -->
+  <div id="error-section" style="display:none">
+    <div class="error-icon">❌</div>
+    <p id="error-message" class="error-message"></p>
+    <button onclick="location.reload()" class="btn btn-outline">Try Again</button>
+  </div>
+</div>
+
+<script>
+let stepCount = 0;
+const maxSteps = 8;
+
+function startGeneration() {
+  document.getElementById('before-gen').style.display = 'none';
+  document.getElementById('progress-section').style.display = 'block';
+
+  const evtSource = new EventSource('/generate/stream');
+  const stepsDiv = document.getElementById('progress-steps');
+  const progressBar = document.getElementById('progress-bar');
+
+  evtSource.onmessage = function(e) {
+    const data = e.data;
+
+    if (data.startsWith('step:')) {
+      const msg = data.substring(5);
+      stepCount++;
+      const pct = Math.min((stepCount / maxSteps) * 90, 90);
+      progressBar.style.width = pct + '%';
+
+      const step = document.createElement('div');
+      step.className = 'progress-step';
+      step.textContent = '• ' + msg;
+      stepsDiv.appendChild(step);
+      stepsDiv.scrollTop = stepsDiv.scrollHeight;
+
+    } else if (data.startsWith('done:')) {
+      evtSource.close();
+      progressBar.style.width = '100%';
+      document.getElementById('progress-section').style.display = 'none';
+      document.getElementById('done-section').style.display = 'block';
+      document.getElementById('done-message').textContent = data.substring(5);
+
+    } else if (data.startsWith('error:')) {
+      evtSource.close();
+      document.getElementById('progress-section').style.display = 'none';
+      document.getElementById('error-section').style.display = 'block';
+      document.getElementById('error-message').textContent = data.substring(6);
+    }
+  };
+
+  evtSource.onerror = function() {
+    evtSource.close();
+    document.getElementById('progress-section').style.display = 'none';
+    document.getElementById('error-section').style.display = 'block';
+    document.getElementById('error-message').textContent = 'Connection error. Please try again.';
+  };
+}
+</script>
+
+{% endblock %}

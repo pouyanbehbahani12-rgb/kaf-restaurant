@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}KAF — AI Social Media Agent{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">
+    <span class="nav-logo">☕</span>
+    <span class="nav-title">KAF Agent</span>
+  </div>
+  <div class="nav-links">
+    <a href="/" class="nav-link">Dashboard</a>
+    <a href="/posts" class="nav-link">Posts</a>
+    <a href="/generate" class="nav-link nav-generate">✨ Generate</a>
+    <a href="/events" class="nav-link">Events</a>
+    <a href="/menu" class="nav-link">Menu</a>
+    <a href="/brand" class="nav-link">Brand</a>
+  </div>
+</nav>
+
+<main class="main-content">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <p>KAF — AI Social Media Agent &bull; Powered by Claude Sonnet</p>
+</footer>
+
+</body>
+</html>

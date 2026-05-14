@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Menu — KAF Agent{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>Menu</h1>
+</div>
+
+<!-- Upload Form -->
+<div class="card">
+  <h2>Upload Menu File</h2>
+  <form method="post" action="/menu/upload" enctype="multipart/form-data" class="upload-form">
+    <div class="form-row">
+      <input type="file" name="file" accept=".pdf,.json" class="form-input" required>
+      <button type="submit" class="btn btn-primary">Upload ↑</button>
+    </div>
+    <small class="form-hint">Supports PDF and JSON files</small>
+  </form>
+</div>
+
+<!-- Add Item Manually -->
+<div class="card">
+  <h2>Add Item Manually</h2>
+  <form method="post" action="/menu/items">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Arabic Name * <span class="lang-tag">عربي</span></label>
+        <input type="text" name="name_ar" class="form-input" required dir="rtl" placeholder="لاتيه كراميل">
+      </div>
+      <div class="form-group">
+        <label class="form-label">English Name</label>
+        <input type="text" name="name_en" class="form-input" dir="ltr" placeholder="Caramel Latte">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <input type="text" name="category" class="form-input" placeholder="Coffee / Food / Dessert">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Price</label>
+        <input type="number" name="price" class="form-input" step="0.01" placeholder="25.00">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Arabic Description <span class="lang-tag">وصف</span></label>
+      <textarea name="description_ar" class="form-textarea" rows="2" dir="rtl" placeholder="وصف العنصر..."></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Item +</button>
+  </form>
+</div>
+
+<!-- Items Table -->
+{% if items %}
+{% set ns = namespace(current_cat='') %}
+{% for item in items %}
+{% if item.category != ns.current_cat %}
+{% set ns.current_cat = item.category %}
+<h3 class="category-heading">{{ item.category or 'Uncategorized' }}</h3>
+{% endif %}
+<div class="menu-item-row {% if not item.is_active %}inactive{% endif %}">
+  <div class="menu-item-info">
+    <div class="menu-item-names">
+      <span class="item-name-en">{{ item.name_en or '—' }}</span>
+      <span class="item-name-ar rtl">{{ item.name_ar }}</span>
+    </div>
+    {% if item.description_ar %}
+    <p class="item-desc rtl">{{ item.description_ar }}</p>
+    {% endif %}
+  </div>
+  <div class="menu-item-price">{{ item.price }}</div>
+  <div class="menu-item-actions">
+    <form method="post" action="/menu/items/{{ item.id }}/toggle" style="display:inline">
+      <button type="submit" class="btn btn-sm {% if item.is_active %}btn-outline{% else %}btn-success{% endif %}">
+        {% if item.is_active %}Hide{% else %}Show{% endif %}
+      </button>
+    </form>
+    <form method="post" action="/menu/items/{{ item.id }}/delete" style="display:inline"
+          onsubmit="return confirm('Delete this item?')">
+      <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+    </form>
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="empty-state">
+  <p>No menu items yet. Upload a file or add items manually.</p>
+</div>
+{% endif %}
+
+{% endblock %}

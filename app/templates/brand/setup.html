@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Brand Setup — KAF Agent{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>Brand Setup</h1>
+  <p class="subtitle">This information helps Claude write in your cafe's unique voice</p>
+</div>
+
+{% if request.query_params.get('saved') %}
+<div class="alert alert-success">Brand profile saved successfully ✓</div>
+{% endif %}
+
+<div class="card">
+  <form method="post" action="/brand">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Cafe Name *</label>
+        <input type="text" name="cafe_name" class="form-input" required
+               value="{{ brand.cafe_name if brand else '' }}"
+               placeholder="Cafe Al Nakheel">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Instagram Handle</label>
+        <input type="text" name="instagram_handle" class="form-input" dir="ltr"
+               value="{{ brand.instagram_handle if brand else '' }}"
+               placeholder="cafealnakheel">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Country</label>
+        <select name="country" class="form-input">
+          <option value="">Select country</option>
+          {% for c in countries %}
+          <option value="{{ c }}" {% if brand and brand.country == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Content Language</label>
+        <select name="language_preference" class="form-input">
+          <option value="ar_en" {% if not brand or brand.language_preference == 'ar_en' %}selected{% endif %}>
+            Arabic + English
+          </option>
+          <option value="ar" {% if brand and brand.language_preference == 'ar' %}selected{% endif %}>
+            Arabic only
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Cafe Personality <span class="lang-tag">شخصية الكافيه</span></label>
+      <textarea name="personality_description" class="form-textarea" rows="3" dir="rtl"
+                placeholder="كافيه دافئ وعصري يجمع بين أجواء المنزل وجودة القهوة المتخصصة...">{{ brand.personality_description if brand else '' }}</textarea>
+      <small class="form-hint">Write in Arabic — Claude will use this to match your tone</small>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Target Audience <span class="lang-tag">الجمهور</span></label>
+      <textarea name="target_audience" class="form-textarea" rows="2" dir="rtl"
+                placeholder="الشباب من 20-35 سنة، محبو القهوة، العاملون من المنزل...">{{ brand.target_audience if brand else '' }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Tone Keywords <span class="lang-tag">لهجة البراند</span></label>
+      <input type="text" name="tone_keywords" class="form-input" dir="rtl"
+             value="{{ brand.tone_keywords if brand else '' }}"
+             placeholder="ودود، عصري، مريح، راقي">
+      <small class="form-hint">Separate by comma</small>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Example Posts <span class="text-muted">(optional — helps Claude match your style)</span></label>
+      {% for i in range(3) %}
+      <div style="margin-bottom: 0.5rem;">
+        <small class="form-hint">Example {{ i+1 }}</small>
+        <textarea name="example{{ i+1 }}" class="form-textarea" rows="3" dir="rtl"
+                  placeholder="Paste an existing post or write an example in your voice...">{{ example_posts[i] if example_posts|length > i else '' }}</textarea>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary btn-large">💾 Save Brand Profile</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

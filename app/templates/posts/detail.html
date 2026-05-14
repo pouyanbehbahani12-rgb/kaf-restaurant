@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Post Detail — KAF Agent{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <a href="/posts" class="back-link">← Back to Posts</a>
+  <div class="page-header-right">
+    <span class="badge badge-{{ post.post_type }}">{{ post.post_type }}</span>
+    <span class="badge badge-status-{{ post.status }}">{{ post.status }}</span>
+  </div>
+</div>
+
+<div class="detail-grid">
+  <!-- Edit Form -->
+  <div class="detail-main">
+    <form method="post" action="/posts/{{ post.id }}/edit">
+
+      <div class="form-group">
+        <label class="form-label">Arabic Content <span class="lang-tag">عربي</span></label>
+        <textarea name="content_ar" class="form-textarea" rows="6" dir="rtl">{{ post.content_ar }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">English Content</label>
+        <textarea name="content_en" class="form-textarea" rows="6" dir="ltr">{{ post.content_en }}</textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Arabic Hashtags <span class="lang-tag">هاشتاق</span></label>
+          <input type="text" name="hashtags_ar" class="form-input"
+                 value="{{ post.hashtags_ar | join(' ') }}" dir="rtl"
+                 placeholder="#كافيه #قهوة">
+          <small class="form-hint">Separate by space or comma</small>
+        </div>
+        <div class="form-group">
+          <label class="form-label">English Hashtags</label>
+          <input type="text" name="hashtags_en" class="form-input"
+                 value="{{ post.hashtags_en | join(' ') }}" dir="ltr"
+                 placeholder="#cafe #coffee">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+      </div>
+    </form>
+
+    <!-- Copy buttons -->
+    <div class="copy-section">
+      <button onclick="copyText('ar')" class="btn btn-outline btn-sm">Copy Arabic 📋</button>
+      <button onclick="copyText('en')" class="btn btn-outline btn-sm">Copy English 📋</button>
+      <button onclick="copyAll()" class="btn btn-outline btn-sm">Copy All 📋</button>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="detail-sidebar">
+    <div class="sidebar-card">
+      <h3>Actions</h3>
+      {% if post.status == 'draft' %}
+      <form method="post" action="/posts/{{ post.id }}/approve">
+        <button type="submit" class="btn btn-success btn-block">✓ Approve Post</button>
+      </form>
+      <form method="post" action="/posts/{{ post.id }}/reject" style="margin-top: 0.5rem">
+        <button type="submit" class="btn btn-danger btn-block">✗ Reject</button>
+      </form>
+      {% elif post.status == 'approved' %}
+      <div class="status-badge-large approved">✓ Approved</div>
+      {% if post.approved_at %}
+      <p class="text-muted text-sm">{{ post.approved_at.strftime('%Y-%m-%d') }}</p>
+      {% endif %}
+      {% else %}
+      <div class="status-badge-large rejected">✗ Rejected</div>
+      {% endif %}
+    </div>
+
+    {% if post.rationale %}
+    <div class="sidebar-card">
+      <h3>AI Note</h3>
+      <details>
+        <summary>Why this post?</summary>
+        <p class="rationale-text">{{ post.rationale }}</p>
+      </details>
+    </div>
+    {% endif %}
+
+    <div class="sidebar-card">
+      <h3>Details</h3>
+      <dl class="details-list">
+        <dt>Week</dt><dd>{{ post.week_start_date }}</dd>
+        <dt>Type</dt><dd>{{ post.post_type }}</dd>
+        <dt>Platform</dt><dd>{{ post.platform }}</dd>
+      </dl>
+    </div>
+  </div>
+</div>
+
+<script>
+function copyText(lang) {
+  const area = document.querySelector('textarea[name="content_' + lang + '"]');
+  navigator.clipboard.writeText(area.value);
+}
+function copyAll() {
+  const ar = document.querySelector('textarea[name="content_ar"]').value;
+  const en = document.querySelector('textarea[name="content_en"]').value;
+  const tagsAr = document.querySelector('input[name="hashtags_ar"]').value;
+  const tagsEn = document.querySelector('input[name="hashtags_en"]').value;
+  navigator.clipboard.writeText(`${ar}\n\n${en}\n\n${tagsAr} ${tagsEn}`);
+}
+</script>
+
+{% endblock %}

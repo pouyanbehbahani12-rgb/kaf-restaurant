@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Posts — KAF Agent{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>Posts</h1>
+</div>
+
+<!-- Filters -->
+<div class="filter-bar">
+  <div class="filter-tabs">
+    <a href="/posts?status=all{% if current_week %}&week={{ current_week }}{% endif %}"
+       class="filter-tab {% if current_status == 'all' %}active{% endif %}">All</a>
+    <a href="/posts?status=draft{% if current_week %}&week={{ current_week }}{% endif %}"
+       class="filter-tab {% if current_status == 'draft' %}active{% endif %}">Drafts</a>
+    <a href="/posts?status=approved{% if current_week %}&week={{ current_week }}{% endif %}"
+       class="filter-tab {% if current_status == 'approved' %}active{% endif %}">Approved</a>
+    <a href="/posts?status=rejected{% if current_week %}&week={{ current_week }}{% endif %}"
+       class="filter-tab {% if current_status == 'rejected' %}active{% endif %}">Rejected</a>
+  </div>
+  {% if all_weeks %}
+  <div class="week-filter">
+    <select onchange="window.location='/posts?status={{ current_status }}&week='+this.value">
+      <option value="">All weeks</option>
+      {% for week in all_weeks %}
+      <option value="{{ week }}" {% if week == current_week %}selected{% endif %}>{{ week }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% endif %}
+  <div class="filter-actions">
+    <a href="/posts/export/json{% if current_week %}?week={{ current_week }}{% endif %}"
+       class="btn btn-outline btn-sm">Export JSON ↓</a>
+  </div>
+</div>
+
+{% if posts %}
+<div class="posts-list">
+  {% for post in posts %}
+  <div class="post-row status-{{ post.status }}">
+    <div class="post-row-badges">
+      <span class="badge badge-{{ post.post_type }}">{{ post.post_type }}</span>
+      <span class="badge badge-status-{{ post.status }}">
+        {% if post.status == 'draft' %}Draft
+        {% elif post.status == 'approved' %}Approved ✓
+        {% elif post.status == 'rejected' %}Rejected
+        {% endif %}
+      </span>
+    </div>
+    <div class="post-row-content">
+      <!-- Arabic -->
+      <p class="post-preview-ar rtl">{{ post.content_ar[:150] }}{% if post.content_ar|length > 150 %}...{% endif %}</p>
+      <!-- English -->
+      {% if post.content_en %}
+      <p class="post-preview-en text-muted">{{ post.content_en[:120] }}{% if post.content_en|length > 120 %}...{% endif %}</p>
+      {% endif %}
+    </div>
+    <div class="post-row-actions">
+      <a href="/posts/{{ post.id }}" class="btn btn-sm">View</a>
+      {% if post.status == 'draft' %}
+      <form method="post" action="/posts/{{ post.id }}/approve" style="display:inline">
+        <button type="submit" class="btn btn-sm btn-success">✓ Approve</button>
+      </form>
+      <form method="post" action="/posts/{{ post.id }}/reject" style="display:inline">
+        <button type="submit" class="btn btn-sm btn-danger">✗ Reject</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">📭</div>
+  <p>No posts found.</p>
+  <a href="/generate" class="btn btn-primary">Generate Content ✨</a>
+</div>
+{% endif %}
+
+{% endblock %}
