@@ -12,9 +12,11 @@ class Settings(BaseSettings):
 
     @property
     def sqlalchemy_database_url(self) -> str:
-        # Railway provides postgresql:// but SQLAlchemy needs postgresql+psycopg2://
+        # Railway may provide postgres:// or postgresql:// — SQLAlchemy needs postgresql+psycopg2://
         url = self.database_url
-        if url.startswith("postgresql://"):
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql+psycopg2://", 1)
+        elif url.startswith("postgresql://"):
             url = url.replace("postgresql://", "postgresql+psycopg2://", 1)
         return url
 
