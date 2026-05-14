@@ -15,8 +15,7 @@ templates = Jinja2Templates(directory="app/templates")
 def menu_list(request: Request, db: Session = Depends(get_db)):
     items = db.query(MenuItem).order_by(MenuItem.category, MenuItem.name_ar).all()
     categories = sorted({i.category for i in items if i.category})
-    return templates.TemplateResponse("menu/list.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "menu/list.html", context={
         "items": items,
         "categories": categories,
     })

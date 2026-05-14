@@ -14,7 +14,7 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.get("", response_class=HTMLResponse)
 def generate_page(request: Request):
-    return templates.TemplateResponse("generate/progress.html", {"request": request})
+    return templates.TemplateResponse(request, "generate/progress.html")
 
 
 @router.post("")

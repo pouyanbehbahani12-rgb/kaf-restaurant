@@ -34,8 +34,7 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
     recent_posts = all_posts[:6]
     occasions = get_upcoming_occasions(days_ahead=14, country=brand.country if brand else None)
 
-    return templates.TemplateResponse("index.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "index.html", context={
         "brand": brand,
         "stats": stats,
         "recent_posts": recent_posts,

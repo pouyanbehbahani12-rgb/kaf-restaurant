@@ -17,8 +17,7 @@ PROMO_TYPES = ["general", "discount", "new_item", "special", "seasonal"]
 @router.get("", response_class=HTMLResponse)
 def events_list(request: Request, db: Session = Depends(get_db)):
     events = db.query(Event).filter(Event.is_active == True).order_by(Event.created_at.desc()).all()
-    return templates.TemplateResponse("events/form.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "events/form.html", context={
         "events": events,
         "promo_types": PROMO_TYPES,
     })

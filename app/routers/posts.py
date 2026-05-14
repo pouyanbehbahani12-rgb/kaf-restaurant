@@ -58,8 +58,7 @@ def list_posts(
         reverse=True,
     )
 
-    return templates.TemplateResponse("posts/list.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "posts/list.html", context={
         "posts": [_post_to_dict(p) for p in posts],
         "current_status": status,
         "current_week": week,
@@ -72,8 +71,7 @@ def post_detail(post_id: int, request: Request, db: Session = Depends(get_db)):
     post = db.query(GeneratedPost).filter(GeneratedPost.id == post_id).first()
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
-    return templates.TemplateResponse("posts/detail.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "posts/detail.html", context={
         "post": _post_to_dict(post),
     })
 

@@ -23,8 +23,7 @@ def brand_setup(request: Request, db: Session = Depends(get_db)):
             example_posts = json.loads(brand.example_posts)
         except Exception:
             example_posts = [brand.example_posts]
-    return templates.TemplateResponse("brand/setup.html", {
-        "request": request,
+    return templates.TemplateResponse(request, "brand/setup.html", context={
         "brand": brand,
         "example_posts": example_posts,
         "countries": COUNTRIES,
