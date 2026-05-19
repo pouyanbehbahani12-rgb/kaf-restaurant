@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neeb · Roastery & Bakery</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --olive:       #546040;
+  --olive-deep:  #465435;
+  --olive-mid:   #637550;
+  --olive-light: #7A8F64;
+  --cream:       #F4EDE8;
+  --cream-mid:   #EDE3DB;
+  --white:       #FFFFFF;
+  --mauve:       #C4A0C8;
+  --mauve-pale:  #EDE0F4;
+  --gold:        #C8A44A;
+  --text-dark:   #2A2A2A;
+  --text-mid:    #5A5A5A;
+  --text-soft:   #909090;
+  --text-light:  #F0EAE4;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--text-dark);
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-thumb { background: var(--mauve); border-radius: 99px; }
+
+/* ─── HEADER ─── */
+header {
+  position: sticky; top: 0; z-index: 300;
+  background: var(--olive-deep);
+  height: 66px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 44px;
+  border-bottom: 1px solid rgba(200,164,74,0.18);
+}
+
+.logo-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  text-decoration: none; gap: 2px;
+}
+.logo-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px; font-weight: 400;
+  color: var(--cream); letter-spacing: 4px;
+  text-transform: lowercase; line-height: 1;
+}
+.logo-sub-text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 7.5px; font-weight: 500;
+  letter-spacing: 3.5px; text-transform: uppercase;
+  color: var(--gold); opacity: 0.85;
+}
+
+nav { display: flex; align-items: center; gap: 28px; }
+nav a {
+  font-size: 13px; font-weight: 400; letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(240,234,228,0.65); text-decoration: none;
+  transition: color 0.2s;
+}
+nav a:hover { color: var(--cream); }
+
+.header-btn {
+  background: transparent;
+  border: 1px solid rgba(200,164,74,0.5);
+  color: var(--gold);
+  padding: 8px 20px; border-radius: 99px;
+  font-family: 'DM Sans', sans-serif; font-size: 12px;
+  font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
+  cursor: pointer; transition: all 0.2s;
+}
+.header-btn:hover { background: rgba(200,164,74,0.12); border-color: var(--gold); }
+
+/* ─── HERO ─── */
+.hero {
+  position: relative;
+  background: var(--olive-deep);
+  height: 520px;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+#hero-canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+.hero-content {
+  position: relative; z-index: 2;
+  text-align: center; pointer-events: none;
+}
+.hero-eyebrow {
+  display: inline-block;
+  font-size: 10px; font-weight: 500; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 22px;
+}
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(72px, 11vw, 128px);
+  font-weight: 300; line-height: 0.9;
+  color: var(--cream); letter-spacing: 8px;
+  text-transform: lowercase;
+}
+.hero-title em {
+  font-style: italic; color: var(--gold);
+}
+.hero-tagline {
+  margin-top: 18px;
+  font-size: 12px; letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(240,234,228,0.5);
+}
+.hero-divider {
+  width: 40px; height: 1px;
+  background: var(--gold);
+  margin: 20px auto 0;
+  opacity: 0.5;
+}
+.hero-scroll {
+  position: absolute; bottom: 30px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  z-index: 2;
+}
+.hero-scroll span {
+  font-size: 9px; letter-spacing: 3px;
+  text-transform: uppercase; color: rgba(240,234,228,0.35);
+}
+.scroll-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--gold); opacity: 0.5;
+  animation: dotPulse 2s ease-in-out infinite;
+}
+@keyframes dotPulse {
+  0%,100% { transform: translateY(0); opacity: 0.3; }
+  50% { transform: translateY(6px); opacity: 0.8; }
+}
+
+/* ─── CATEGORY BAR ─── */
+.cat-bar-wrap {
+  position: sticky; top: 66px; z-index: 200;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(196,160,200,0.15);
+}
+.cat-bar {
+  display: flex; align-items: stretch;
+  padding: 0 44px;
+  overflow-x: auto; scrollbar-width: none;
+  gap: 2px;
+}
+.cat-bar::-webkit-scrollbar { display: none; }
+.cat-btn {
+  flex-shrink: 0; padding: 14px 18px;
+  border: none; background: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 400; letter-spacing: 0.3px;
+  color: var(--text-soft); cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.cat-btn:hover { color: var(--text-dark); }
+.cat-btn.active {
+  color: var(--olive);
+  border-bottom-color: var(--olive);
+  font-weight: 600;
+}
+
+/* ─── MAIN ─── */
+.main {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 44px 44px 90px;
+}
+.menu-section { margin-bottom: 60px; }
+.menu-section.hidden { display: none; }
+
+.section-head {
+  display: flex; align-items: baseline; gap: 14px;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(62,77,44,0.1);
+}
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px; font-weight: 500; color: var(--olive-deep);
+  letter-spacing: 1px;
+}
+.section-sub {
+  font-size: 12.5px; color: var(--text-soft);
+  font-style: italic; letter-spacing: 0.5px;
+}
+
+/* ─── PRODUCT GRID ─── */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+@media (max-width: 1200px) { .product-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 860px)  { .product-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px)  { .product-grid { grid-template-columns: 1fr; } }
+
+/* ─── PRODUCT CARD ─── */
+.card {
+  background: var(--white);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 16px rgba(42,26,10,0.07);
+  transition: box-shadow 0.3s ease;
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.card:hover {
+  box-shadow: 0 12px 40px rgba(42,26,10,0.13);
+}
+
+.card-img-wrap {
+  height: 210px;
+  position: relative;
+  overflow: hidden;
+}
+.card-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+.card:hover .card-img-wrap img {
+  transform: scale(1.05);
+}
+.card-img-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 50%, rgba(30,20,10,0.35) 100%);
+  pointer-events: none;
+}
+
+.card-like {
+  position: absolute; top: 12px; right: 12px;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  border: none; cursor: pointer; z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; transition: transform 0.2s, background 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  color: var(--text-soft);
+}
+.card-like:hover { transform: scale(1.15); color: #e05070; }
+.card-like.liked { color: #e05070; background: #fff; }
+
+.card-badge-3d {
+  position: absolute; bottom: 12px; right: 12px;
+  background: rgba(62,77,44,0.85);
+  backdrop-filter: blur(4px);
+  color: rgba(200,164,74,0.9);
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 99px; z-index: 2;
+  border: 1px solid rgba(200,164,74,0.3);
+}
+
+.card-rating {
+  position: absolute; bottom: 12px; left: 12px; z-index: 2;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+  color: #fff; font-size: 11px; font-weight: 500;
+  padding: 3px 9px; border-radius: 99px;
+  display: flex; align-items: center; gap: 3px;
+}
+.star { color: #FFD166; font-size: 10px; }
+
+.card-body {
+  padding: 14px 16px 18px;
+  border-top: 1px solid rgba(62,77,44,0.06);
+}
+.card-name {
+  font-size: 14.5px; font-weight: 500;
+  color: var(--text-dark); line-height: 1.3; margin-bottom: 8px;
+  letter-spacing: 0.1px;
+}
+.card-price {
+  font-size: 14px; font-weight: 600;
+  color: var(--olive-mid);
+  display: flex; align-items: center; gap: 5px;
+}
+.curr { font-size: 11px; font-weight: 400; opacity: 0.7; letter-spacing: 0.5px; }
+
+/* ─── 3D MODAL ─── */
+.modal-bg {
+  display: none;
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(20,28,12,0.88);
+  backdrop-filter: blur(16px);
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-bg.open { display: flex; }
+
+.modal-box {
+  background: var(--olive-deep);
+  border-radius: 20px;
+  overflow: hidden;
+  width: 100%; max-width: 700px;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.5),
+              0 0 0 1px rgba(200,164,74,0.15);
+  animation: modalIn 0.38s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+@keyframes modalIn {
+  from { transform: scale(0.8) translateY(20px); opacity: 0; }
+  to   { transform: scale(1) translateY(0);      opacity: 1; }
+}
+
+.modal-3d-area {
+  position: relative;
+  height: 400px;
+  background: var(--olive-deep);
+}
+#modal-canvas {
+  display: block; width: 100% !important; height: 100% !important;
+}
+.modal-loading {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(240,234,228,0.35);
+  font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+  pointer-events: none;
+}
+.modal-close {
+  position: absolute; top: 16px; right: 16px; z-index: 10;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--cream); font-size: 14px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+}
+.modal-close:hover { background: rgba(255,255,255,0.15); transform: scale(1.1); }
+
+.modal-hint {
+  position: absolute; bottom: 16px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.45);
+  color: rgba(240,234,228,0.65);
+  font-size: 11px; padding: 5px 14px; border-radius: 99px;
+  white-space: nowrap; pointer-events: none;
+  letter-spacing: 0.5px;
+}
+
+.modal-info {
+  padding: 26px 32px 32px;
+  background: var(--olive-deep);
+}
+.modal-cat {
+  font-size: 10px; font-weight: 600; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 10px; opacity: 0.8;
+}
+.modal-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 30px; font-weight: 400; letter-spacing: 1px;
+  color: var(--cream); line-height: 1.15; margin-bottom: 10px;
+}
+.modal-price-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+}
+.modal-price {
+  font-size: 20px; font-weight: 600; color: var(--gold);
+  display: flex; align-items: center; gap: 5px;
+}
+.modal-price .curr { font-size: 12px; font-weight: 400; }
+.modal-desc {
+  font-size: 13.5px; line-height: 1.7;
+  color: rgba(240,234,228,0.55); margin-bottom: 24px;
+}
+.modal-divider {
+  width: 100%; height: 1px;
+  background: rgba(200,164,74,0.12);
+  margin-bottom: 22px;
+}
+.modal-actions { display: flex; align-items: center; gap: 12px; }
+.btn-order {
+  background: var(--gold);
+  color: var(--olive-deep);
+  border: none; padding: 13px 30px; border-radius: 99px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700;
+  letter-spacing: 0.5px; cursor: pointer;
+  transition: all 0.2s; display: inline-flex; align-items: center; gap: 7px;
+}
+.btn-order:hover { background: #D4B45E; transform: scale(1.02); }
+.btn-fav {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(240,234,228,0.06);
+  border: 1px solid rgba(240,234,228,0.12);
+  color: var(--cream); font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.btn-fav:hover { background: rgba(240,234,228,0.1); }
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--olive-deep);
+  padding: 40px 44px;
+  text-align: center;
+  border-top: 1px solid rgba(200,164,74,0.1);
+}
+.footer-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px; font-weight: 300; letter-spacing: 6px;
+  color: var(--cream); margin-bottom: 6px;
+}
+.footer-sub {
+  font-size: 8px; letter-spacing: 4px;
+  text-transform: uppercase; color: var(--gold);
+  opacity: 0.6; margin-bottom: 20px;
+}
+footer p {
+  font-size: 12px; color: rgba(240,234,228,0.3);
+  line-height: 1.8; letter-spacing: 0.5px;
+}
+
+/* ─── MOBILE ─── */
+@media (max-width: 768px) {
+  header { padding: 0 20px; }
+  nav { display: none; }
+  .hero { height: 420px; }
+  .cat-bar { padding: 0 16px; }
+  .main { padding: 28px 16px 60px; }
+  .modal-info { padding: 20px 22px 26px; }
+  .modal-name { font-size: 24px; }
+  footer { padding: 28px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a href="#" class="logo-wrap">
+    <span class="logo-name">neeb</span>
+    <span class="logo-sub-text">Roastery &amp; Bakery</span>
+  </a>
+  <nav>
+    <a href="#">Menu</a>
+    <a href="#">Our Story</a>
+    <a href="#">Visit Us</a>
+  </nav>
+  <button class="header-btn">Order Now</button>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Kuwait &nbsp;·&nbsp; Oman &nbsp;·&nbsp; Est. 2020</div>
+    <h1 class="hero-title">ne<em>e</em>b</h1>
+    <p class="hero-tagline">Roastery &amp; Bakery</p>
+    <div class="hero-divider"></div>
+  </div>
+  <div class="hero-scroll">
+    <span>Explore</span>
+    <div class="scroll-dot"></div>
+  </div>
+</section>
+
+<!-- CATEGORY BAR -->
+<div class="cat-bar-wrap">
+  <div class="cat-bar" id="cat-bar">
+    <button class="cat-btn active" data-cat="all">Most Liked ♥</button>
+    <button class="cat-btn" data-cat="croissant">Croissant</button>
+    <button class="cat-btn" data-cat="pastries">Pastries</button>
+    <button class="cat-btn" data-cat="coffee">Speciality Coffee</button>
+    <button class="cat-btn" data-cat="v60">V60 Filter Coffee</button>
+    <button class="cat-btn" data-cat="tea">Tea &amp; Chai</button>
+    <button class="cat-btn" data-cat="refreshment">The Refreshment</button>
+    <button class="cat-btn" data-cat="chocolate">The Chocolate</button>
+    <button class="cat-btn" data-cat="roastery">Neeb Roastery</button>
+    <button class="cat-btn" data-cat="breakfast">Special Breakfast</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="menu-section" id="sec-coffee">
+    <div class="section-head">
+      <h2 class="section-title">Speciality Coffee</h2>
+      <span class="section-sub">Serve Hot or Iced</span>
+    </div>
+    <div class="product-grid" id="grid-coffee"></div>
+  </div>
+  <div class="menu-section" id="sec-pastries">
+    <div class="section-head">
+      <h2 class="section-title">Pastries</h2>
+      <span class="section-sub">Freshly Baked Daily</span>
+    </div>
+    <div class="product-grid" id="grid-pastries"></div>
+  </div>
+  <div class="menu-section" id="sec-croissant">
+    <div class="section-head">
+      <h2 class="section-title">Croissant</h2>
+      <span class="section-sub">All-Butter · Freshly Laminated</span>
+    </div>
+    <div class="product-grid" id="grid-croissant"></div>
+  </div>
+</main>
+
+<!-- 3D MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal-box">
+    <div class="modal-3d-area">
+      <canvas id="modal-canvas"></canvas>
+      <div class="modal-loading" id="modal-loading">Loading 3D View…</div>
+      <button class="modal-close" id="modal-close">✕</button>
+      <div class="modal-hint">Drag to rotate · Scroll to zoom</div>
+    </div>
+    <div class="modal-info">
+      <div class="modal-cat" id="m-cat">SPECIALITY COFFEE</div>
+      <div class="modal-name" id="m-name">Cappuccino</div>
+      <div class="modal-divider"></div>
+      <div class="modal-price-row">
+        <div class="modal-price"><span class="curr">OMR</span><span id="m-price">2.200</span></div>
+      </div>
+      <div class="modal-desc" id="m-desc">A beautifully crafted specialty item.</div>
+      <div class="modal-actions">
+        <button class="btn-order">Add to Order ✦</button>
+        <button class="btn-fav">♡</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">neeb</div>
+  <div class="footer-sub">Roastery &amp; Bakery</div>
+  <p>© 2024 Neeb. Specialty Coffee &amp; Artisan Pastries.<br>
+  Kuwait &nbsp;·&nbsp; Oman &nbsp;·&nbsp; Crafted with love, served with care.</p>
+</footer>
+
+<script>
+'use strict';
+
+/* ──────────────────────────────
+   PRODUCT IMAGE URLs
+   ✅ Real Neeb photos from Talabat & Instagram
+   📸 Best matches for the rest
+────────────────────────────── */
+
+// Unsplash fallbacks (stable, always available)
+const FALLBACK = {
+  espresso:     'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=600&h=500&fit=crop&auto=format&q=85',
+  coffee:       'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&h=500&fit=crop&auto=format&q=85',
+  latte:        'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=600&h=500&fit=crop&auto=format&q=85',
+  arabic:       'https://images.unsplash.com/photo-1590278069629-b30d1e9be4c0?w=600&h=500&fit=crop&auto=format&q=85',
+  cake:         'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&h=500&fit=crop&auto=format&q=85',
+  cheesecake:   'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=600&h=500&fit=crop&auto=format&q=85',
+  tiramisu:     'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=600&h=500&fit=crop&auto=format&q=85',
+  muffin:       'https://images.unsplash.com/photo-1607958996333-41aef7caefaa?w=600&h=500&fit=crop&auto=format&q=85',
+  millefeuille: 'https://images.unsplash.com/photo-1464195244916-405fa0a82545?w=600&h=500&fit=crop&auto=format&q=85',
+  finger:       'https://images.unsplash.com/photo-1587314168485-3236d6710814?w=600&h=500&fit=crop&auto=format&q=85',
+  slab:         'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600&h=500&fit=crop&auto=format&q=85',
+  babka:        'https://images.unsplash.com/photo-1509365465985-25d11c17e812?w=600&h=500&fit=crop&auto=format&q=85',
+  toast:        'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=600&h=500&fit=crop&auto=format&q=85',
+  croissant:    'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&h=500&fit=crop&auto=format&q=85',
+  danish:       'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&h=500&fit=crop&auto=format&q=85',
+  painchoc:     'https://images.unsplash.com/photo-1548365328-8c6db3220e4c?w=600&h=500&fit=crop&auto=format&q=85',
+};
+
+// Real Neeb images — Talabat CDN (stable) + Instagram
+const NEEB = {
+  // ── Talabat (stable)
+  'Americano':              'https://images.deliveryhero.io/image/talabat/MenuItems/Americano638892156907975550.jpg',
+  'Coconut Chocolate Cake': 'https://images.deliveryhero.io/image/talabat/MenuItems/Coconut_Chocolate_Cake638892159581783462.jpg',
+  'Caramel Finger':         'https://images.deliveryhero.io/image/talabat/MenuItems/Carmel_Finger638892160146855581.jpg',
+
+  // ── Instagram Neeb (@neeb.om) — real product shots
+  '_coffee': 'https://instagram.fmct8-1.fna.fbcdn.net/v/t51.82787-15/689654407_17961385821094462_6412102573103926785_n.jpg',
+  'Pistachio 100%':             'https://instagram.fmct7-1.fna.fbcdn.net/v/t51.82787-15/661777161_17957185716094462_8846338621024297078_n.jpg',
+  'Pistachio Croissant':        'https://instagram.fmct7-1.fna.fbcdn.net/v/t51.82787-15/661777161_17957185716094462_8846338621024297078_n.jpg',
+  'Raspberry Baked Cheesecake': 'https://instagram.fmct8-1.fna.fbcdn.net/v/t51.82787-15/659030701_17957002461094462_4050338062676923284_n.jpg',
+  'Flower Cheesecake':          'https://instagram.fmct8-1.fna.fbcdn.net/v/t51.82787-15/659030701_17957002461094462_4050338062676923284_n.jpg',
+  'Neeb Chocolate':             'https://instagram.fmct8-1.fna.fbcdn.net/v/t51.82787-15/695755894_17961934098094462_778704691199658066_n.jpg',
+  'Mix Chocolate Slab':         'https://instagram.fmct8-1.fna.fbcdn.net/v/t51.82787-15/695755894_17961934098094462_778704691199658066_n.jpg',
+
+  // ── Per-product Unsplash overrides — distinct photo for each item
+  'Espresso':               'https://images.unsplash.com/photo-1596952954288-16862d37405b?w=600&h=500&fit=crop&auto=format&q=85',
+  'Flat White':             'https://images.unsplash.com/photo-1577968897966-3d4325b36b61?w=600&h=500&fit=crop&auto=format&q=85',
+  'Cappuccino':             'https://images.unsplash.com/photo-1534778101976-62847782c213?w=600&h=500&fit=crop&auto=format&q=85',
+  'Cortado':                'https://images.unsplash.com/photo-1541167760496-1628856ab772?w=600&h=500&fit=crop&auto=format&q=85',
+  'Latte':                  'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=600&h=500&fit=crop&auto=format&q=85',
+  'Spanish Latte':          'https://images.unsplash.com/photo-1561047029-3000c68339ca?w=600&h=500&fit=crop&auto=format&q=85',
+  'Arabic Coffee':          'https://images.unsplash.com/photo-1590278069629-b30d1e9be4c0?w=600&h=500&fit=crop&auto=format&q=85',
+  'Chocolate Raspberry Cake':'https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?w=600&h=500&fit=crop&auto=format&q=85',
+  'Strawberry Cake':        'https://images.unsplash.com/photo-1621303837174-89787a7d4729?w=600&h=500&fit=crop&auto=format&q=85',
+  'Tiramisu':               'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=600&h=500&fit=crop&auto=format&q=85',
+  'Dates Cake Neeb':        'https://images.unsplash.com/photo-1587314168485-3236d6710814?w=600&h=500&fit=crop&auto=format&q=85',
+  'Classic Mille Feuille':  'https://images.unsplash.com/photo-1554844019-1af2eba47a5d?w=600&h=500&fit=crop&auto=format&q=85',
+  'Rose Mille Feuille':     'https://images.unsplash.com/photo-1464195244916-405fa0a82545?w=600&h=500&fit=crop&auto=format&q=85',
+  'Vanilla Flower':         'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=600&h=500&fit=crop&auto=format&q=85',
+  'Marble Cake':            'https://images.unsplash.com/photo-1519869325930-281384150729?w=600&h=500&fit=crop&auto=format&q=85',
+  'Carrot Cake':            'https://images.unsplash.com/photo-1602351447937-745cb720612f?w=600&h=500&fit=crop&auto=format&q=85',
+  'Blueberries Muffin':     'https://images.unsplash.com/photo-1607958996333-41aef7caefaa?w=600&h=500&fit=crop&auto=format&q=85',
+  'Chocolate Babkah':       'https://images.unsplash.com/photo-1509365465985-25d11c17e812?w=600&h=500&fit=crop&auto=format&q=85',
+  'French Toast':           'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=600&h=500&fit=crop&auto=format&q=85',
+  'Croissant Swiss':        'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&h=500&fit=crop&auto=format&q=85',
+  'Almond Croissant':       'https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?w=600&h=500&fit=crop&auto=format&q=85',
+  'Pain au Chocolate':      'https://images.unsplash.com/photo-1548365328-8c6db3220e4c?w=600&h=500&fit=crop&auto=format&q=85',
+  'Strawberry Danish':      'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&h=500&fit=crop&auto=format&q=85',
+  'Blueberry Danish':       'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&h=500&fit=crop&auto=format&q=85',
+  'Raspberry Danish':       'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&h=500&fit=crop&auto=format&q=85',
+  'Plain Croissant':        'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&h=500&fit=crop&auto=format&q=85',
+};
+
+function getImg(type, name) {
+  // 1. Exact product name match (real Neeb photo)
+  if (name && NEEB[name]) return NEEB[name];
+  // 2. Coffee types → use Neeb barista shot
+  if (['espresso','coffee','latte'].includes(type)) return NEEB['_coffee'];
+  // 3. Fallback to best available
+  return FALLBACK[type] || FALLBACK.cake;
+}
+
+function getFallback(type) {
+  return FALLBACK[type] || FALLBACK.cake;
+}
+
+/* ──────────────────────────────
+   DESCRIPTIONS
+────────────────────────────── */
+const DESC = {
+  espresso:     'Pure. Intense. Extracted from our single-origin beans — a shot of absolute precision.',
+  coffee:       'Bold espresso diluted with hot water. Clean, bright and endlessly satisfying.',
+  latte:        'Silky microfoam steamed milk over a double espresso. A ritual in every sip.',
+  arabic:       'Traditional Arabic coffee with cardamom, saffron and rose water — warmth in a cup.',
+  cake:         'Artisan layered cake crafted daily with the finest seasonal ingredients.',
+  cheesecake:   'Velvety smooth baked cheesecake resting on a buttery, caramelised biscuit base.',
+  tiramisu:     'Classic Italian — espresso-soaked savoiardi, mascarpone cream and Dutch cocoa.',
+  muffin:       'Freshly baked muffin bursting with hand-picked seasonal berries.',
+  millefeuille: 'Shatteringly crisp layers of caramelised puff pastry and luscious cream.',
+  finger:       'Elegant caramel-glazed finger pastry — light, crisp and perfectly balanced.',
+  slab:         'Indulgent chocolate slab with our signature Neeb glaze and premium toppings.',
+  babka:        'Soft, pillowy sweet bread twisted with rich chocolate frangipane.',
+  toast:        'Golden brioche French toast crowned with seasonal fruit and fresh cream.',
+  croissant:    'All-butter, shatteringly flaky croissant — freshly laminated each morning.',
+  danish:       'Delicate Danish pastry layered with custard and vibrant seasonal fruit.',
+  painchoc:     'Classic pain au chocolat encasing two generous bars of Belgian dark chocolate.',
+};
+
+/* ──────────────────────────────
+   MENU DATA
+────────────────────────────── */
+const MENU = {
+  coffee: {
+    label: 'SPECIALITY COFFEE',
+    items: [
+      { id:'c1', name:'Espresso',      price:'1.600', rating:5.0, type:'espresso'  },
+      { id:'c2', name:'Americano',     price:'1.900', rating:5.0, type:'coffee'    },
+      { id:'c3', name:'Flat White',    price:'2.200', rating:5.0, type:'latte'     },
+      { id:'c4', name:'Cappuccino',    price:'2.200', rating:4.0, type:'latte'     },
+      { id:'c5', name:'Cortado',       price:'2.000', rating:5.0, type:'espresso'  },
+      { id:'c6', name:'Latte',         price:'2.200', rating:5.0, type:'latte'     },
+      { id:'c7', name:'Spanish Latte', price:'2.400', rating:5.0, type:'latte'     },
+      { id:'c8', name:'Arabic Coffee', price:'4.500', rating:5.0, type:'arabic'    },
+    ]
+  },
+  pastries: {
+    label: 'PASTRIES',
+    items: [
+      { id:'p1',  name:'Chocolate Raspberry Cake',   price:'4.800', rating:5.0, type:'cake'         },
+      { id:'p2',  name:'Raspberry Baked Cheesecake', price:'4.600', rating:5.0, type:'cheesecake'   },
+      { id:'p3',  name:'Flower Cheesecake',          price:'4.200', rating:5.0, type:'cheesecake'   },
+      { id:'p4',  name:'Strawberry Cake',            price:'4.200', rating:4.9, type:'cake'         },
+      { id:'p5',  name:'Neeb Chocolate',             price:'4.600', rating:5.0, type:'slab'         },
+      { id:'p6',  name:'Pistachio 100%',             price:'4.200', rating:5.0, type:'cake'         },
+      { id:'p7',  name:'Tiramisu',                   price:'3.900', rating:5.0, type:'tiramisu'     },
+      { id:'p8',  name:'Dates Cake Neeb',            price:'3.400', rating:5.0, type:'cake'         },
+      { id:'p9',  name:'Coconut Chocolate Cake',     price:'3.500', rating:5.0, type:'cake'         },
+      { id:'p10', name:'Classic Mille Feuille',      price:'4.200', rating:5.0, type:'millefeuille' },
+      { id:'p11', name:'Rose Mille Feuille',         price:'4.300', rating:5.0, type:'millefeuille' },
+      { id:'p12', name:'Caramel Finger',             price:'3.900', rating:4.0, type:'finger'       },
+      { id:'p13', name:'Vanilla Flower',             price:'4.200', rating:5.0, type:'cake'         },
+      { id:'p14', name:'Mix Chocolate Slab',         price:'4.200', rating:5.0, type:'slab'         },
+      { id:'p15', name:'Marble Cake',                price:'2.400', rating:5.0, type:'cake'         },
+      { id:'p16', name:'Carrot Cake',                price:'2.400', rating:5.0, type:'cake'         },
+      { id:'p17', name:'Blueberries Muffin',         price:'2.000', rating:5.0, type:'muffin'       },
+      { id:'p18', name:'Chocolate Babkah',           price:'2.100', rating:5.0, type:'babka'        },
+      { id:'p19', name:'French Toast',               price:'4.800', rating:5.0, type:'toast'        },
+    ]
+  },
+  croissant: {
+    label: 'CROISSANT',
+    items: [
+      { id:'cr1',  name:'Plain Croissant',          price:'1.600', rating:4.0, type:'croissant' },
+      { id:'cr2',  name:'Croissant Swiss',          price:'2.200', rating:5.0, type:'croissant' },
+      { id:'cr3',  name:'Almond Croissant',         price:'2.400', rating:5.0, type:'croissant' },
+      { id:'cr4',  name:'Pain au Chocolate',        price:'2.200', rating:5.0, type:'painchoc'  },
+      { id:'cr5',  name:'Pistachio Croissant',      price:'2.600', rating:5.0, type:'croissant' },
+      { id:'cr6',  name:'Mini Croissant Mix',       price:'2.800', rating:4.0, type:'croissant' },
+      { id:'cr7',  name:'Halloumi Zaatar Croissant',price:'2.000', rating:4.0, type:'croissant' },
+      { id:'cr8',  name:'Fetta Olive Croissant',    price:'2.400', rating:5.0, type:'croissant' },
+      { id:'cr9',  name:'Strawberry Danish',        price:'2.600', rating:5.0, type:'danish'    },
+      { id:'cr10', name:'Hotdog Danish',            price:'2.800', rating:5.0, type:'danish'    },
+      { id:'cr11', name:'Blueberry Danish',         price:'3.600', rating:5.0, type:'danish'    },
+      { id:'cr12', name:'Raspberry Danish',         price:'3.800', rating:5.0, type:'danish'    },
+      { id:'cr13', name:'Spinach Danish',           price:'2.800', rating:5.0, type:'danish'    },
+      { id:'cr14', name:'Mushroom Cheese Danish',   price:'2.200', rating:5.0, type:'danish'    },
+      { id:'cr15', name:'Mozzarella Danish',        price:'2.800', rating:5.0, type:'danish'    },
+      { id:'cr16', name:'Pepperoni Danish',         price:'2.400', rating:5.0, type:'danish'    },
+    ]
+  }
+};
+
+/* ──────────────────────────────
+   RENDER CARDS
+────────────────────────────── */
+function renderGrid(catKey) {
+  const data = MENU[catKey];
+  const grid = document.getElementById(`grid-${catKey}`);
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  data.items.forEach((item) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    card.innerHTML = `
+      <div class="card-img-wrap">
+        <img src="${getImg(item.type, item.name)}"
+             data-fallback="${getFallback(item.type)}"
+             onerror="this.onerror=null;this.src=this.dataset.fallback"
+             alt="${item.name}"
+             loading="lazy"
+             crossorigin="anonymous">
+        <div class="card-img-overlay"></div>
+        <button class="card-like" data-liked="false">♡</button>
+        <div class="card-rating"><span class="star">★</span>${item.rating.toFixed(1)}</div>
+        <div class="card-badge-3d">3D</div>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${item.name}</div>
+        <div class="card-price"><span class="curr">OMR</span>${item.price}</div>
+      </div>`;
+
+    // Like
+    card.querySelector('.card-like').addEventListener('click', e => {
+      e.stopPropagation();
+      const btn = e.currentTarget;
+      const liked = btn.dataset.liked === 'true';
+      btn.dataset.liked = String(!liked);
+      btn.textContent = liked ? '♡' : '♥';
+      btn.classList.toggle('liked', !liked);
+    });
+
+    // 3D tilt hover
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width/2)  / (r.width/2);
+      const y = (e.clientY - r.top  - r.height/2) / (r.height/2);
+      card.style.transform = `perspective(900px) rotateY(${x*9}deg) rotateX(${-y*9}deg) scale(1.02) translateZ(6px)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+
+    // Open modal
+    card.addEventListener('click', () => openModal(item, data.label));
+    grid.appendChild(card);
+  });
+}
+
+/* ──────────────────────────────
+   MODAL — Three.js 3D Photo Frame
+────────────────────────────── */
+let modalR, modalScene, modalCam, modalRAF, modalGroup;
+let isDrag = false, prevX = 0, prevY = 0, autoRot = true;
+
+function openModal(item, catLabel) {
+  // Fill info
+  document.getElementById('m-cat').textContent   = catLabel;
+  document.getElementById('m-name').textContent  = item.name;
+  document.getElementById('m-price').textContent = item.price;
+  document.getElementById('m-desc').textContent  = DESC[item.type] || 'A Neeb specialty crafted with care.';
+
+  const bg = document.getElementById('modal-bg');
+  bg.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('modal-loading').style.display = 'flex';
+
+  // Tear down previous
+  if (modalR) { cancelAnimationFrame(modalRAF); modalR.dispose(); modalR = null; }
+
+  const canvas  = document.getElementById('modal-canvas');
+  const W = canvas.parentElement.clientWidth;
+  const H = canvas.parentElement.clientHeight || 400;
+
+  modalR = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  modalR.setSize(W, H);
+  modalR.setPixelRatio(Math.min(devicePixelRatio, 2));
+  modalR.shadowMap.enabled = true;
+  modalR.shadowMap.type = THREE.PCFSoftShadowMap;
+  modalR.setClearColor(0x465435);
+
+  modalScene = new THREE.Scene();
+  modalCam   = new THREE.PerspectiveCamera(38, W/H, 0.1, 100);
+  modalCam.position.set(0, 0, 5.2);
+  modalCam.lookAt(0, 0, 0);
+
+  // Lighting
+  const ambient = new THREE.AmbientLight(0x8A9E6A, 0.5);
+  modalScene.add(ambient);
+
+  const keyLight = new THREE.SpotLight(0xFFF8E8, 2.5, 15, Math.PI/5, 0.6);
+  keyLight.position.set(3, 5, 5);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.width  = 1024;
+  keyLight.shadow.mapSize.height = 1024;
+  modalScene.add(keyLight);
+
+  const rimLight = new THREE.DirectionalLight(0xC4A0C8, 0.8);
+  rimLight.position.set(-4, 1, -3);
+  modalScene.add(rimLight);
+
+  const goldLight = new THREE.PointLight(0xC8A44A, 0.6, 12);
+  goldLight.position.set(0, -3, 2);
+  modalScene.add(goldLight);
+
+  // Floor reflection
+  const floorGeo = new THREE.CircleGeometry(3, 64);
+  const floorMat = new THREE.MeshStandardMaterial({
+    color: 0x3E4D2C, metalness: 0.6, roughness: 0.5,
+    transparent: true, opacity: 0.6
+  });
+  const floor = new THREE.Mesh(floorGeo, floorMat);
+  floor.rotation.x = -Math.PI/2; floor.position.y = -2;
+  floor.receiveShadow = true;
+  modalScene.add(floor);
+
+  // Subtle background particles (gold dust)
+  const pGeo = new THREE.BufferGeometry();
+  const N = 120; const pos = new Float32Array(N*3);
+  for (let i=0;i<N;i++) {
+    pos[i*3]=(Math.random()-0.5)*14;
+    pos[i*3+1]=(Math.random()-0.5)*9;
+    pos[i*3+2]=(Math.random()-0.5)*4 - 2;
+  }
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  modalScene.add(new THREE.Points(pGeo,
+    new THREE.PointsMaterial({ color:0xC8A44A, size:0.04, transparent:true, opacity:0.35 })));
+
+  // ── Build 3D photo frame from texture
+  function buildPhotoFrame(texture) {
+    texture.minFilter = THREE.LinearFilter;
+    document.getElementById('modal-loading').style.display = 'none';
+
+    modalGroup = new THREE.Group();
+
+    // Shadow
+    const shadowPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(3.4, 3.4),
+      new THREE.MeshBasicMaterial({ color:0x000000, transparent:true, opacity:0.28 })
+    );
+    shadowPlane.position.set(0.1, -0.1, -0.22);
+    shadowPlane.rotation.x = 0.05;
+    modalGroup.add(shadowPlane);
+
+    // Gold border (back)
+    modalGroup.add(Object.assign(
+      new THREE.Mesh(
+        new THREE.BoxGeometry(2.94, 2.94, 0.02),
+        new THREE.MeshStandardMaterial({ color:0xC8A44A, metalness:0.85, roughness:0.15 })
+      ), { position: new THREE.Vector3(0,0,-0.056) }
+    ));
+
+    // White frame
+    const frame = new THREE.Mesh(
+      new THREE.BoxGeometry(2.88, 2.88, 0.1),
+      new THREE.MeshStandardMaterial({ color:0xF6F0E8, roughness:0.15, metalness:0.08 })
+    );
+    frame.castShadow = true;
+    modalGroup.add(frame);
+
+    // Photo surface
+    const photo = new THREE.Mesh(
+      new THREE.PlaneGeometry(2.52, 2.52),
+      new THREE.MeshStandardMaterial({ map:texture, roughness:0.4 })
+    );
+    photo.position.z = 0.06;
+    modalGroup.add(photo);
+
+    modalScene.add(modalGroup);
+
+    autoRot = true;
+    function tick() {
+      modalRAF = requestAnimationFrame(tick);
+      if (autoRot) {
+        modalGroup.rotation.y += 0.005;
+        modalGroup.rotation.x = Math.sin(Date.now()*0.0004) * 0.055;
+      }
+      modalGroup.position.y = Math.sin(Date.now()*0.0008)*0.12;
+      modalR.render(modalScene, modalCam);
+    }
+    tick();
+  }
+
+  // Load real photo → fallback to stable Unsplash if needed
+  const loader = new THREE.TextureLoader();
+  loader.crossOrigin = 'anonymous';
+  loader.load(
+    getImg(item.type, item.name),
+    buildPhotoFrame,
+    undefined,
+    () => loader.load(getFallback(item.type), buildPhotoFrame, undefined,
+      () => { document.getElementById('modal-loading').style.display = 'none'; }
+    )
+  );
+
+  // ── Drag to rotate
+  canvas.onmousedown  = e => { isDrag=true; autoRot=false; prevX=e.clientX; prevY=e.clientY; };
+  canvas.onmousemove  = e => {
+    if (!isDrag||!modalGroup) return;
+    modalGroup.rotation.y += (e.clientX-prevX)*0.012;
+    modalGroup.rotation.x += (e.clientY-prevY)*0.012;
+    prevX=e.clientX; prevY=e.clientY;
+  };
+  canvas.onmouseup = () => { isDrag=false; setTimeout(()=>autoRot=true, 2000); };
+  canvas.ontouchstart = e => { isDrag=true; autoRot=false; prevX=e.touches[0].clientX; prevY=e.touches[0].clientY; };
+  canvas.ontouchmove  = e => {
+    if (!isDrag||!modalGroup) return;
+    modalGroup.rotation.y += (e.touches[0].clientX-prevX)*0.012;
+    modalGroup.rotation.x += (e.touches[0].clientY-prevY)*0.012;
+    prevX=e.touches[0].clientX; prevY=e.touches[0].clientY;
+  };
+  canvas.ontouchend = () => { isDrag=false; setTimeout(()=>autoRot=true,2000); };
+  canvas.onwheel = e => {
+    if (!modalCam) return;
+    modalCam.position.z = Math.max(2.5, Math.min(9, modalCam.position.z + e.deltaY*0.005));
+  };
+}
+
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('open');
+  document.body.style.overflow = '';
+  if (modalRAF) cancelAnimationFrame(modalRAF);
+  if (modalR)   { modalR.dispose(); modalR = null; }
+}
+
+document.getElementById('modal-close').addEventListener('click', closeModal);
+document.getElementById('modal-bg').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+/* ──────────────────────────────
+   HERO — Three.js
+────────────────────────────── */
+function initHero() {
+  const canvas = document.getElementById('hero-canvas');
+  const W = canvas.clientWidth, H = canvas.clientHeight;
+  if (!W||!H) return;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, W/H, 0.1, 100);
+  camera.position.set(0, 0, 9);
+
+  scene.add(new THREE.AmbientLight(0xFFFFFF, 0.5));
+  const keyL = new THREE.DirectionalLight(0xFFF8E8, 1.2);
+  keyL.position.set(5, 8, 6); scene.add(keyL);
+  const rimL = new THREE.DirectionalLight(0xC4A0C8, 0.5);
+  rimL.position.set(-5, 2, -3); scene.add(rimL);
+
+  // Floating photo frames in hero background (tiny versions)
+  const heroFrames = [];
+  const heroItems = [
+    { url: NEEB['_coffee'],                          x:-4.5, y:0.4,  z:-1, scale:0.55, spd:0.004 },
+    { url: NEEB['Coconut Chocolate Cake'],           x: 4.2, y:-0.3, z:-1, scale:0.55, spd:0.003 },
+    { url: FALLBACK.croissant,                       x: 0,   y:-2.2, z:-2, scale:0.45, spd:0.005 },
+  ];
+
+  heroItems.forEach((it, i) => {
+    const frameGeo = new THREE.BoxGeometry(1, 1, 0.06);
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0xF6F0E8, roughness:0.2 });
+    const frame = new THREE.Mesh(frameGeo, frameMat);
+
+    const borderMat = new THREE.MeshStandardMaterial({ color:0xC8A44A, metalness:0.8, roughness:0.2 });
+    const border = new THREE.Mesh(new THREE.BoxGeometry(1.04,1.04,0.02), borderMat);
+    border.position.z = -0.04;
+
+    const g = new THREE.Group();
+    g.add(frame); g.add(border);
+    g.scale.set(it.scale,it.scale,it.scale);
+    g.position.set(it.x, it.y, it.z);
+
+    // Load texture
+    const ldr = new THREE.TextureLoader();
+    ldr.crossOrigin = 'anonymous';
+    ldr.load(it.url, (tex) => {
+      tex.minFilter = THREE.LinearFilter;
+      const photoMat = new THREE.MeshStandardMaterial({ map: tex, roughness:0.4 });
+      const photo = new THREE.Mesh(new THREE.PlaneGeometry(0.88, 0.88), photoMat);
+      photo.position.z = 0.04;
+      g.add(photo);
+    });
+
+    scene.add(g);
+    heroFrames.push({ g, ...it, offset: i * 1.5 });
+  });
+
+  // Olive-toned floating particles
+  const pGeo = new THREE.BufferGeometry();
+  const N = 200, pPos = new Float32Array(N*3);
+  for (let i=0;i<N;i++) {
+    pPos[i*3]=(Math.random()-0.5)*22;
+    pPos[i*3+1]=(Math.random()-0.5)*12;
+    pPos[i*3+2]=(Math.random()-0.5)*6-3;
+  }
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos,3));
+  scene.add(new THREE.Points(pGeo,
+    new THREE.PointsMaterial({ color:0xC8A44A, size:0.04, transparent:true, opacity:0.3 })));
+
+  function tick() {
+    requestAnimationFrame(tick);
+    heroFrames.forEach((it, i) => {
+      it.g.rotation.y += it.spd;
+      it.g.rotation.x = Math.sin(Date.now()*0.0005 + it.offset)*0.08;
+      it.g.position.y = heroItems[i].y + Math.sin(Date.now()*0.0009 + it.offset)*0.3;
+    });
+    renderer.render(scene, camera);
+  }
+  tick();
+
+  window.addEventListener('resize', () => {
+    const nw = canvas.clientWidth, nh = canvas.clientHeight;
+    renderer.setSize(nw, nh);
+    camera.aspect = nw/nh; camera.updateProjectionMatrix();
+  });
+}
+
+/* ──────────────────────────────
+   CATEGORY FILTER
+────────────────────────────── */
+document.getElementById('cat-bar').addEventListener('click', e => {
+  const btn = e.target.closest('.cat-btn');
+  if (!btn) return;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const cat = btn.dataset.cat;
+  ['coffee','pastries','croissant'].forEach(key => {
+    const sec = document.getElementById(`sec-${key}`);
+    if (!sec) return;
+    sec.classList.toggle('hidden', cat !== 'all' && cat !== key);
+  });
+
+  // Empty state for non-data tabs
+  document.getElementById('empty-msg')?.remove();
+  if (!['all','coffee','pastries','croissant'].includes(cat)) {
+    const msg = document.createElement('div');
+    msg.id = 'empty-msg';
+    msg.style.cssText = 'text-align:center;padding:80px 20px;color:var(--text-soft)';
+    msg.innerHTML = '<div style="font-size:44px;margin-bottom:14px;filter:grayscale(1)">✨</div><p style="font-size:15px">This section is being curated — coming soon.</p>';
+    document.querySelector('.main').appendChild(msg);
+  }
+});
+
+/* ──────────────────────────────
+   INIT
+────────────────────────────── */
+window.addEventListener('DOMContentLoaded', () => {
+  renderGrid('coffee');
+  renderGrid('pastries');
+  renderGrid('croissant');
+  requestAnimationFrame(() => requestAnimationFrame(initHero));
+});
+</script>
+</body>
+</html>
