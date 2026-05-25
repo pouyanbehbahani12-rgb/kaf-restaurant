@@ -121,15 +121,26 @@ nav a:hover { color: var(--cream); }
   padding-right: 40px;
   max-width: 680px;
   pointer-events: none;
-  /* start hidden — GSAP animates in */
-  opacity: 0;
 }
+/* GSAP will set these to opacity:0 before animating.
+   Without GSAP they stay visible (no-JS / blocked CDN fallback) */
+.gsap-ready .hero-content  { opacity: 0; }
+.gsap-ready .hero-eyebrow  { opacity: 0; transform: translateY(14px); }
+.gsap-ready .hero-title    { opacity: 0; transform: translateY(24px); }
+.gsap-ready .hero-tagline  { opacity: 0; transform: translateY(14px); }
+.gsap-ready .hero-divider  { opacity: 0; }
+.gsap-ready .hero-desc     { opacity: 0; transform: translateY(10px); }
+.gsap-ready .hero-cta      { opacity: 0; transform: translateY(12px); }
+.gsap-ready .hero-stats    { opacity: 0; transform: translateY(10px); }
+.gsap-ready .hero-scroll   { opacity: 0; }
+.gsap-ready .card          { opacity: 0; transform: translateY(30px); }
+.gsap-ready .section-head  { opacity: 0; transform: translateX(-20px); }
+
 .hero-eyebrow {
   display: inline-flex; align-items: center; gap: 10px;
   font-size: 10px; font-weight: 500; letter-spacing: 4px;
   text-transform: uppercase; color: var(--gold);
   margin-bottom: 28px;
-  opacity: 0; transform: translateY(14px);
 }
 .hero-eyebrow::before {
   content: '';
@@ -142,7 +153,6 @@ nav a:hover { color: var(--cream); }
   font-weight: 300; line-height: 0.88;
   color: var(--cream); letter-spacing: 6px;
   text-transform: lowercase;
-  opacity: 0; transform: translateY(24px);
 }
 .hero-title em {
   font-style: italic; color: var(--gold);
@@ -152,26 +162,23 @@ nav a:hover { color: var(--cream); }
   font-size: 13px; letter-spacing: 4px; line-height: 1.9;
   text-transform: uppercase;
   color: rgba(240,234,228,0.55);
-  opacity: 0; transform: translateY(14px);
 }
 .hero-divider {
   width: 44px; height: 1px;
   background: linear-gradient(to right, var(--gold), transparent);
   margin: 24px 0;
-  opacity: 0;
+  opacity: 0.5;
 }
 .hero-desc {
   font-size: 15px; line-height: 1.75;
   color: rgba(240,234,228,0.65);
   max-width: 400px;
   margin-bottom: 36px;
-  opacity: 0; transform: translateY(10px);
 }
 .hero-cta {
   display: flex; align-items: center; gap: 14px;
   margin-bottom: 52px;
   pointer-events: all;
-  opacity: 0; transform: translateY(12px);
 }
 .btn-hero-primary {
   background: var(--gold);
@@ -207,7 +214,6 @@ nav a:hover { color: var(--cream); }
 .hero-stats {
   display: flex; align-items: center; gap: 24px;
   pointer-events: all;
-  opacity: 0; transform: translateY(10px);
 }
 .hero-stat { display: flex; flex-direction: column; gap: 2px; }
 .hero-stat strong {
@@ -232,7 +238,6 @@ nav a:hover { color: var(--cream); }
   transform: translateX(-50%);
   display: flex; flex-direction: column; align-items: center; gap: 6px;
   z-index: 2; pointer-events: none;
-  opacity: 0;
 }
 .hero-scroll span {
   font-size: 9px; letter-spacing: 3.5px;
@@ -304,11 +309,6 @@ nav a:hover { color: var(--cream); }
   margin-bottom: 28px;
   padding-bottom: 16px;
   border-bottom: 1px solid rgba(62,77,44,0.1);
-  /* start hidden — GSAP animates in */
-  opacity: 0; transform: translateX(-20px);
-}
-.section-head.revealed {
-  opacity: 1; transform: translateX(0);
 }
 .section-title {
   font-family: 'Cormorant Garamond', serif;
@@ -341,13 +341,6 @@ nav a:hover { color: var(--cream); }
   position: relative;
   transform-style: preserve-3d;
   will-change: transform;
-  /* start invisible for GSAP scroll reveal */
-  opacity: 0;
-  transform: translateY(30px);
-}
-.card.revealed {
-  opacity: 1;
-  transform: translateY(0);
 }
 .card:hover {
   box-shadow: 0 12px 40px rgba(42,26,10,0.13);
@@ -1257,6 +1250,9 @@ function initHeaderScroll() {
 function initGSAP() {
   if (typeof gsap === 'undefined') return;
   gsap.registerPlugin(ScrollTrigger);
+
+  // Enable CSS hidden states — content is visible without this class
+  document.body.classList.add('gsap-ready');
 
   // ── Hero entrance — staggered timeline
   const heroTl = gsap.timeline({ delay: 0.3 });
