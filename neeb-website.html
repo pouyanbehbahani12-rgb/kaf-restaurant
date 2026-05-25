@@ -6,6 +6,8 @@
 <title>Neeb · Roastery & Bakery</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -38,12 +40,17 @@ body {
 
 /* ─── HEADER ─── */
 header {
-  position: sticky; top: 0; z-index: 300;
-  background: var(--olive-deep);
-  height: 66px;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+  height: 68px;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 44px;
-  border-bottom: 1px solid rgba(200,164,74,0.18);
+  transition: background 0.4s ease, border-color 0.4s ease, backdrop-filter 0.4s;
+  border-bottom: 1px solid transparent;
+}
+header.scrolled {
+  background: rgba(70,84,53,0.96);
+  backdrop-filter: blur(14px);
+  border-bottom-color: rgba(200,164,74,0.18);
 }
 
 .logo-wrap {
@@ -87,9 +94,22 @@ nav a:hover { color: var(--cream); }
 .hero {
   position: relative;
   background: var(--olive-deep);
-  height: 520px;
-  display: flex; align-items: center; justify-content: center;
+  height: 100vh; min-height: 680px;
+  display: flex; align-items: center;
   overflow: hidden;
+}
+/* gradient panel — makes left text readable over 3D canvas */
+.hero::after {
+  content: '';
+  position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(
+    108deg,
+    rgba(70,84,53,0.97) 0%,
+    rgba(70,84,53,0.90) 38%,
+    rgba(70,84,53,0.50) 60%,
+    transparent 80%
+  );
+  pointer-events: none;
 }
 #hero-canvas {
   position: absolute; inset: 0;
@@ -97,59 +117,151 @@ nav a:hover { color: var(--cream); }
 }
 .hero-content {
   position: relative; z-index: 2;
-  text-align: center; pointer-events: none;
+  padding-left: clamp(28px, 7vw, 100px);
+  padding-right: 40px;
+  max-width: 680px;
+  pointer-events: none;
+  /* start hidden — GSAP animates in */
+  opacity: 0;
 }
 .hero-eyebrow {
-  display: inline-block;
+  display: inline-flex; align-items: center; gap: 10px;
   font-size: 10px; font-weight: 500; letter-spacing: 4px;
   text-transform: uppercase; color: var(--gold);
-  margin-bottom: 22px;
+  margin-bottom: 28px;
+  opacity: 0; transform: translateY(14px);
+}
+.hero-eyebrow::before {
+  content: '';
+  display: block; width: 28px; height: 1px;
+  background: var(--gold); opacity: 0.6;
 }
 .hero-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(72px, 11vw, 128px);
-  font-weight: 300; line-height: 0.9;
-  color: var(--cream); letter-spacing: 8px;
+  font-size: clamp(80px, 12vw, 148px);
+  font-weight: 300; line-height: 0.88;
+  color: var(--cream); letter-spacing: 6px;
   text-transform: lowercase;
+  opacity: 0; transform: translateY(24px);
 }
 .hero-title em {
   font-style: italic; color: var(--gold);
 }
 .hero-tagline {
-  margin-top: 18px;
-  font-size: 12px; letter-spacing: 4px;
+  margin-top: 22px;
+  font-size: 13px; letter-spacing: 4px; line-height: 1.9;
   text-transform: uppercase;
-  color: rgba(240,234,228,0.5);
+  color: rgba(240,234,228,0.55);
+  opacity: 0; transform: translateY(14px);
 }
 .hero-divider {
-  width: 40px; height: 1px;
-  background: var(--gold);
-  margin: 20px auto 0;
-  opacity: 0.5;
+  width: 44px; height: 1px;
+  background: linear-gradient(to right, var(--gold), transparent);
+  margin: 24px 0;
+  opacity: 0;
 }
+.hero-desc {
+  font-size: 15px; line-height: 1.75;
+  color: rgba(240,234,228,0.65);
+  max-width: 400px;
+  margin-bottom: 36px;
+  opacity: 0; transform: translateY(10px);
+}
+.hero-cta {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 52px;
+  pointer-events: all;
+  opacity: 0; transform: translateY(12px);
+}
+.btn-hero-primary {
+  background: var(--gold);
+  color: var(--olive-deep);
+  border: none; padding: 14px 32px; border-radius: 99px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.5px;
+  cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+  box-shadow: 0 8px 28px rgba(200,164,74,0.35);
+}
+.btn-hero-primary:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 14px 36px rgba(200,164,74,0.45);
+}
+.btn-hero-primary .arrow { transition: transform 0.25s; }
+.btn-hero-primary:hover .arrow { transform: translateX(4px); }
+.btn-hero-ghost {
+  background: transparent;
+  border: 1px solid rgba(240,234,228,0.25);
+  color: rgba(240,234,228,0.75);
+  padding: 14px 28px; border-radius: 99px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 400; letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: border-color 0.25s, color 0.25s, background 0.25s;
+}
+.btn-hero-ghost:hover {
+  border-color: rgba(240,234,228,0.55);
+  color: var(--cream);
+  background: rgba(240,234,228,0.06);
+}
+.hero-stats {
+  display: flex; align-items: center; gap: 24px;
+  pointer-events: all;
+  opacity: 0; transform: translateY(10px);
+}
+.hero-stat { display: flex; flex-direction: column; gap: 2px; }
+.hero-stat strong {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; font-weight: 400;
+  color: var(--cream); letter-spacing: 1px;
+  line-height: 1;
+}
+.hero-stat small {
+  font-size: 9.5px; letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(240,234,228,0.4);
+}
+.stat-line {
+  width: 1px; height: 30px;
+  background: rgba(200,164,74,0.22);
+  flex-shrink: 0;
+}
+/* scroll indicator */
 .hero-scroll {
-  position: absolute; bottom: 30px; left: 50%;
+  position: absolute; bottom: 32px; left: 50%;
   transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-  z-index: 2;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  z-index: 2; pointer-events: none;
+  opacity: 0;
 }
 .hero-scroll span {
-  font-size: 9px; letter-spacing: 3px;
-  text-transform: uppercase; color: rgba(240,234,228,0.35);
+  font-size: 9px; letter-spacing: 3.5px;
+  text-transform: uppercase; color: rgba(240,234,228,0.3);
 }
-.scroll-dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--gold); opacity: 0.5;
-  animation: dotPulse 2s ease-in-out infinite;
+.scroll-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, rgba(200,164,74,0.5), transparent);
+  animation: scrollDrop 1.8s ease-in-out infinite;
 }
-@keyframes dotPulse {
-  0%,100% { transform: translateY(0); opacity: 0.3; }
-  50% { transform: translateY(6px); opacity: 0.8; }
+@keyframes scrollDrop {
+  0% { transform: scaleY(0); transform-origin: top; opacity: 0; }
+  40% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+  60% { transform: scaleY(1); transform-origin: bottom; opacity: 1; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0; }
+}
+/* mobile hero */
+@media (max-width: 768px) {
+  .hero { min-height: 580px; }
+  .hero-content { padding-left: 24px; padding-right: 24px; max-width: 100%; }
+  .hero-title { font-size: clamp(60px, 18vw, 90px); }
+  .hero-cta { flex-direction: column; align-items: flex-start; }
+  .hero-stats { gap: 16px; }
+  .hero-stat strong { font-size: 22px; }
 }
 
 /* ─── CATEGORY BAR ─── */
 .cat-bar-wrap {
-  position: sticky; top: 66px; z-index: 200;
+  position: sticky; top: 68px; z-index: 200;
   background: rgba(255,255,255,0.97);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(196,160,200,0.15);
@@ -192,6 +304,11 @@ nav a:hover { color: var(--cream); }
   margin-bottom: 28px;
   padding-bottom: 16px;
   border-bottom: 1px solid rgba(62,77,44,0.1);
+  /* start hidden — GSAP animates in */
+  opacity: 0; transform: translateX(-20px);
+}
+.section-head.revealed {
+  opacity: 1; transform: translateX(0);
 }
 .section-title {
   font-family: 'Cormorant Garamond', serif;
@@ -224,11 +341,17 @@ nav a:hover { color: var(--cream); }
   position: relative;
   transform-style: preserve-3d;
   will-change: transform;
+  /* start invisible for GSAP scroll reveal */
+  opacity: 0;
+  transform: translateY(30px);
+}
+.card.revealed {
+  opacity: 1;
+  transform: translateY(0);
 }
 .card:hover {
   box-shadow: 0 12px 40px rgba(42,26,10,0.13);
 }
-
 .card-img-wrap {
   height: 210px;
   position: relative;
@@ -470,10 +593,24 @@ footer p {
     <h1 class="hero-title">ne<em>e</em>b</h1>
     <p class="hero-tagline">Roastery &amp; Bakery</p>
     <div class="hero-divider"></div>
+    <p class="hero-desc">Crafted from single-origin beans, baked fresh each morning. Every cup, every bite — a moment worth savouring.</p>
+    <div class="hero-cta">
+      <button class="btn-hero-primary" onclick="document.querySelector('.cat-bar-wrap').scrollIntoView({behavior:'smooth'})">
+        Explore Menu <span class="arrow">→</span>
+      </button>
+      <button class="btn-hero-ghost">Our Story</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><strong>40+</strong><small>Menu Items</small></div>
+      <div class="stat-line"></div>
+      <div class="hero-stat"><strong>★ 4.9</strong><small>Rating</small></div>
+      <div class="stat-line"></div>
+      <div class="hero-stat"><strong>2</strong><small>Locations</small></div>
+    </div>
   </div>
   <div class="hero-scroll">
-    <span>Explore</span>
-    <div class="scroll-dot"></div>
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
   </div>
 </section>
 
@@ -765,15 +902,28 @@ function renderGrid(catKey) {
       btn.classList.toggle('liked', !liked);
     });
 
-    // 3D tilt hover
+    // 3D tilt hover — use GSAP quickSetter if available, else CSS vars
     card.addEventListener('mousemove', e => {
       const r = card.getBoundingClientRect();
       const x = (e.clientX - r.left - r.width/2)  / (r.width/2);
       const y = (e.clientY - r.top  - r.height/2) / (r.height/2);
-      card.style.transform = `perspective(900px) rotateY(${x*9}deg) rotateX(${-y*9}deg) scale(1.02) translateZ(6px)`;
+      if (typeof gsap !== 'undefined') {
+        gsap.to(card, {
+          rotateY: x * 9, rotateX: -y * 9,
+          scale: 1.02, z: 6,
+          duration: 0.25, ease: 'power2.out',
+          overwrite: 'auto'
+        });
+      } else {
+        card.style.transform = `perspective(900px) rotateY(${x*9}deg) rotateX(${-y*9}deg) scale(1.02) translateZ(6px)`;
+      }
     });
     card.addEventListener('mouseleave', () => {
-      card.style.transform = '';
+      if (typeof gsap !== 'undefined') {
+        gsap.to(card, { rotateY: 0, rotateX: 0, scale: 1, z: 0, duration: 0.4, ease: 'power3.out', overwrite: 'auto' });
+      } else {
+        card.style.transform = '';
+      }
     });
 
     // Open modal
@@ -1066,7 +1216,15 @@ document.getElementById('cat-bar').addEventListener('click', e => {
   ['coffee','pastries','croissant'].forEach(key => {
     const sec = document.getElementById(`sec-${key}`);
     if (!sec) return;
-    sec.classList.toggle('hidden', cat !== 'all' && cat !== key);
+    const visible = cat === 'all' || cat === key;
+    sec.classList.toggle('hidden', !visible);
+    // Animate cards that haven't been revealed yet
+    if (visible && typeof gsap !== 'undefined') {
+      const hidden = Array.from(sec.querySelectorAll('.card')).filter(c => parseFloat(getComputedStyle(c).opacity) < 0.5);
+      if (hidden.length) {
+        gsap.to(hidden, { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out', stagger: 0.04 });
+      }
+    }
   });
 
   // Empty state for non-data tabs
@@ -1081,6 +1239,76 @@ document.getElementById('cat-bar').addEventListener('click', e => {
 });
 
 /* ──────────────────────────────
+   HEADER — transparent over hero, solid on scroll
+────────────────────────────── */
+function initHeaderScroll() {
+  const header = document.querySelector('header');
+  const threshold = window.innerHeight * 0.15;
+  function onScroll() {
+    header.classList.toggle('scrolled', window.scrollY > threshold);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+/* ──────────────────────────────
+   GSAP ANIMATIONS
+────────────────────────────── */
+function initGSAP() {
+  if (typeof gsap === 'undefined') return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  // ── Hero entrance — staggered timeline
+  const heroTl = gsap.timeline({ delay: 0.3 });
+  heroTl
+    .to('.hero-content', { opacity: 1, duration: 0 })
+    .to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' })
+    .to('.hero-title',   { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' }, '-=0.4')
+    .to('.hero-tagline', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.5')
+    .to('.hero-divider', { opacity: 0.5, duration: 0.5, ease: 'power2.out' }, '-=0.3')
+    .to('.hero-desc',    { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
+    .to('.hero-cta',     { opacity: 1, y: 0, duration: 0.6, ease: 'back.out(1.4)' }, '-=0.3')
+    .to('.hero-stats',   { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
+    .to('.hero-scroll',  { opacity: 1, duration: 0.5 }, '-=0.1');
+
+  // ── Section heads — slide in from left on scroll
+  document.querySelectorAll('.section-head').forEach(el => {
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 88%',
+      onEnter: () => {
+        gsap.to(el, {
+          opacity: 1, x: 0, duration: 0.65,
+          ease: 'power3.out',
+          onStart: () => el.classList.add('revealed')
+        });
+      }
+    });
+  });
+
+  // ── Cards — staggered reveal per grid
+  ['coffee', 'pastries', 'croissant'].forEach(key => {
+    const grid = document.getElementById(`grid-${key}`);
+    if (!grid) return;
+    ScrollTrigger.create({
+      trigger: grid,
+      start: 'top 85%',
+      once: true,
+      onEnter: () => {
+        const cards = Array.from(grid.querySelectorAll('.card'));
+        gsap.to(cards, {
+          opacity: 1,
+          y: 0,
+          duration: 0.55,
+          ease: 'power3.out',
+          stagger: { amount: 0.45, from: 'start' }
+        });
+      }
+    });
+  });
+}
+
+/* ──────────────────────────────
    INIT
 ────────────────────────────── */
 window.addEventListener('DOMContentLoaded', () => {
@@ -1088,6 +1316,9 @@ window.addEventListener('DOMContentLoaded', () => {
   renderGrid('pastries');
   renderGrid('croissant');
   requestAnimationFrame(() => requestAnimationFrame(initHero));
+  initHeaderScroll();
+  // GSAP after a tick so cards are in the DOM
+  requestAnimationFrame(() => initGSAP());
 });
 </script>
 </body>
