@@ -873,8 +873,7 @@ function renderGrid(catKey) {
              data-fallback="${getFallback(item.type)}"
              onerror="this.onerror=null;this.src=this.dataset.fallback"
              alt="${item.name}"
-             loading="lazy"
-             crossorigin="anonymous">
+             loading="lazy">
         <div class="card-img-overlay"></div>
         <button class="card-like" data-liked="false">♡</button>
         <div class="card-rating"><span class="star">★</span>${item.rating.toFixed(1)}</div>
